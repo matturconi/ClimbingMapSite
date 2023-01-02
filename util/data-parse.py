@@ -6,7 +6,7 @@ import mysql.connector
 #######
 
 ## File is deliniated by tabs, sometimes route names have commas in it, and it makes data processing a bit messy
-fileName = "Rumney-Routes-All.txt"
+fileName = "Rumney-Routes-All.td"
 filePath = "raw-data\\"
 ## Open the file for reading each line
 file = open(filePath + fileName, 'r')
