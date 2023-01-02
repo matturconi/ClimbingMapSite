@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS ClimbingRoute(
     Id          INT             NOT NULL PRIMARY KEY AUTO_INCREMENT,
     Name        VARCHAR(256)    NOT NULL,
     AvgStars    DECIMAL         NOT NULL,
-    RouteType   INT             NOT NULL,       -- Enum val for route type
+    RouteType   VARCHAR(16)     NOT NULL,       
     Difficulty  VARCHAR(16)     NOT NULL,
     Length      INT             NULL,
     LocationId  INT             NOT NULL,
