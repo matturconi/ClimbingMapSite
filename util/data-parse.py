@@ -5,7 +5,8 @@ import mysql.connector
 # Scrit would need to be adapted for existing entries to avoid duplicates
 #######
 
-fileName = "Rumney-Routes-test.csv"
+## File is deliniated by tabs, sometimes route names have commas in it, and it makes data processing a bit messy
+fileName = "Rumney-Routes-All.txt"
 filePath = "raw-data\\"
 ## Open the file for reading each line
 file = open(filePath + fileName, 'r')
@@ -37,22 +38,16 @@ areaDic = {}
 while dat != "":    
     ## Columns we want are (Route, Location, AVG Stars, Route Type, Difficulty, Length, Area Latitude, Area Longitude)
     ## Split by comma and grab the values we want
-    dat = dat.split(',')
-    routeName = dat[0]
-    location = dat[1]
-    avgStars = dat[3]
-    ## Sometimes route type is more than one, seperated by a comma, split will not handle this right
-    offset = 0
+    dat = dat.split('\t')
+    routeName = dat[0].strip('\"')
+    location = dat[1].strip('\"')
+    avgStars = dat[3].strip('\"')
     routeType = dat[5]
-    if routeType[0] == '\"':
-        while routeType[len(routeType) - 1] != '\"':
-            offset += 1
-            routeType += ", " + dat[5 + offset]
-    routeType = routeType.trim('\"')
-    difficulty = dat[6 + offset].trim('\"')
-    routeLength = dat[8 + offset]
-    areaLat = dat[9 + offset]
-    areaLong = dat[10 + offset]
+    routeType = routeType.strip('\"')
+    difficulty = dat[6].strip('\"')
+    routeLength = dat[8]
+    areaLat = dat[9]
+    areaLong = dat[10]
     
     ## If route length is not null, convert to an int
     if routeLength != '':
@@ -60,20 +55,23 @@ while dat != "":
     else: 
         routeLength = None
 
-    ## Location ID used to link a route to a location
-    locationSplit = location.split(" > ")
-    loc = locationSplit[0]
-    locId = 0
-    if loc not in areaDic.keys():
-        cursor.execute(addArea, (loc, areaLat, areaLong, location))
-        locId = cursor.lastrowid
-        areaDic[loc] = locId
-    else:
-        locId = areaDic[loc]
+    try: 
+        ## Location ID used to link a route to a location
+        locationSplit = location.split(" > ")
+        loc = locationSplit[0]
+        locId = 0
+        if loc not in areaDic.keys():
+            cursor.execute(addArea, (loc, areaLat, areaLong, location))
+            locId = cursor.lastrowid
+            areaDic[loc] = locId
+        else:
+            locId = areaDic[loc]
 
-    ## Insert the data into a new entry of the MySQL database
-    routeData = (routeName, avgStars, routeType, difficulty, routeLength, locId)
-    cursor.execute(addRoute, routeData)
+        ## Insert the data into a new entry of the MySQL database
+        routeData = (routeName, avgStars, routeType, difficulty, routeLength, locId)
+        cursor.execute(addRoute, routeData)
+    except: 
+        print("Error occured with data line: ", dat)
 
     ## Read in the next line
     dat = file.readline()
