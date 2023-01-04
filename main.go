@@ -2,8 +2,8 @@ package main
 
 import (
 	"climbing-map-app/server"
-	"fmt"
 
+	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,9 +12,9 @@ var router *gin.Engine
 func main() {
 	// Set the router as the default one provided by Gin
 	router = gin.Default()
-	if router == nil {
-		fmt.Println("was nil")
-	}
+	//Needed for hot reloading to work
+	router.Use(cors.Default())
+
 	// Init the routes
 	server.InitializeRoutes(router)
 

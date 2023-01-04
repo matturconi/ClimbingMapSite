@@ -5,7 +5,7 @@ import './App.css';
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, TileLayer, Tooltip } from 'react-leaflet';
 import { ClimbingArea } from './classes/ClimbingArea';
-import { GetClimbingAreas } from './api/DataFetchApi';
+import { GetClimbingAreas, GetClimbRoutes } from './api/DataFetchApi';
 
 function App() {
   const [climbingAreas, setClimbingAreas] = useState<ClimbingArea[]>();
@@ -19,18 +19,29 @@ function App() {
   const fetchAreas = () => {
     GetClimbingAreas().then((data) => {
       setClimbingAreas(data);
-    }).catch(error => {
+    }).catch((error) => {
       console.log("Error getting Climbing Areas", error)
     })
   }
 
+  const fetchRoutes = (areaId: number) => {
+    GetClimbRoutes(areaId).then((data) => {
+      console.log(data);
+    }).catch((error) => {
+      console.log("Error getting routes for Area", error)
+    })
+  }
+
   const getAreaMarkers = () => {
-    console.log("called get area markers", climbingAreas);
     let markers: JSX.Element[] = [];
     climbingAreas?.forEach((area) => {
       markers.push(
-        <Marker icon={lIcon} position={[area.Latitude,area.Longitude]} >
-          <Tooltip offset={[0,12]} direction='left'>
+        <Marker icon={lIcon} position={[area.Latitude,area.Longitude]} eventHandlers={{
+          click: (e) => {
+            fetchRoutes(area.Id);
+          },
+        }}>
+          <Tooltip offset={[0,15]} direction='left'>
             {area.Name}
           </Tooltip>
         </Marker>

@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"strconv"
 
 	"climbing-map-app/server/database"
 
@@ -23,15 +24,8 @@ func InitializeRoutes(router *gin.Engine) {
 		})
 	}
 
-	api.GET("fetchedMsg", getFetchedMsg)
 	api.GET("getClimbingAreas", getClimbingAreas)
-}
-
-func getFetchedMsg(c *gin.Context) {
-	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, gin.H{
-		"message": "This is a message that we fetched form the gin.",
-	})
+	api.GET("getClimbingRoutes/:id", getClimbingRoutes)
 }
 
 func getClimbingAreas(c *gin.Context) {
@@ -45,4 +39,24 @@ func getClimbingAreas(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK, ret)
 	}
 
+}
+
+func getClimbingRoutes(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Invalid Area Id",
+		})
+	} else {
+		ret, err := database.GetRoutesByArea(id)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"message": "Error getting climbing routes for chosen area.",
+			})
+		} else {
+			// Need to spiralize the routes to add location
+			c.IndentedJSON(http.StatusOK, ret)
+		}
+	}
 }
