@@ -1,20 +1,118 @@
 :root {
-  --light-1: #FFFFFF;
-  --light-2: #CFE094;
-  --med: #96CA70;
-  --dark-1: #62A2BC;
-  --dark-2: #123543;
+  --blu-1: #E4F6F4;
+  --blu-2: #85D6CD;
+  --blu-3: #33998D;
+  --blu-4: #1e1d31;
+  --gry-1: #DCE4E3;
+  --gry-2: #809D9A;
+  --gry-3: #3E514F;
+  --prp-1: #eae8ff;
+  --prp-2: #d9d5ff;;
+  --prp-3: #57538a;
+  --prp-4: #38373e;
+
+  --header: var(--blu-4);
+  --background: var(--gry-1);
+  --footer: var(--header);
 }
 
 .App {
   text-align: center;
-  background-color: #282c34;
+  background-color: var(--background);
   min-height: 100vh;
+  color: var(--blu-1);
+}
+
+.centerContent {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
+.column {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  flex: 1;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  box-shadow: 2px 2px 6px var(--blu-4);
+}
+
+.title {
+  height: 140px;
+  background-color: var(--header);
+}
+
+.iconBorder {
+  height: 125px;
+  width: 126px;
+  background-color: var(--blu-1);
+  border-radius: 35px;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+.image {
+  height: 120px;
+  width: 120px;
+  padding-top: 3px;
+}
+
+.footer {
+  position:fixed;
+  bottom:0px;
+  height: 20px;
+  width:100%;
+  background: var(--footer);
+  text-align: left;
+  padding-left: 10px;
+  font-size: 12px;
+  padding-top: 3px;
+}
+
+.text {
+  font-size: 40px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+@keyframes fadeIn{
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+.routeCircle {
+  width: 30px ;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--gry-1);
+  border-style: solid;
+  border-color: var(--gry-3);
+  border-width: 2px;
+  opacity: 0;
+  box-shadow: 2px 2px 4px var(--blu-4);
+  animation: 500ms fadeIn forwards; 
+}
+
+#BackgroundPaper {
+  height: 100%; 
+  background-color: var(--prp-1);
+  margin: 5px;
+  padding-top: 5px;
+  position: relative;
+}
+
+#HeaderPaper {
+  height: 40px;
+  background-color: var(--prp-2);
+  font-size: 20px;
+  margin: 5px;
+  padding-top: 10px
+}

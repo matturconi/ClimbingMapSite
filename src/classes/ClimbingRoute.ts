@@ -3,9 +3,14 @@ export class ClimbingRoute {
     Name: string = '';
     AvgStars: number = 0;
     RouteType: string = '';
-    Difficulty: string = '';
+    Difficulty: Difficulty = new Difficulty();
     Length: number = 0;
     LocationId: number = 0;
     Latitude: number = 0;
     Longitude: number = 0;
+}
+
+export class Difficulty {
+    RouteGrade: string = '';
+	Id: number = -1;
 }

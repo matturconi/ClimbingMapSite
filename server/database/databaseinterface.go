@@ -11,7 +11,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func GetClimbingAreas() ([]structs.ClimbingArea, error) {
+// Comment this
+// If the aread id is <= -1, then get all areas, else its a specific area
+func GetClimbingAreas(areaId int) ([]structs.ClimbingArea, error) {
 
 	var areas []structs.ClimbingArea
 
@@ -30,7 +32,14 @@ func GetClimbingAreas() ([]structs.ClimbingArea, error) {
 		return nil, err
 	}
 
-	res, err := db.Query("SELECT * FROM climbingarea")
+	query := ""
+	if areaId > -1 {
+		query = "SELECT * FROM climbingarea where Id=" + strconv.Itoa(areaId)
+	} else {
+		query = "SELECT * FROM climbingarea"
+	}
+
+	res, err := db.Query(query)
 
 	defer res.Close()
 
@@ -74,7 +83,7 @@ func GetRoutesByArea(areaId int) ([]structs.ClimbingRoute, error) {
 		return nil, err
 	}
 
-	query := "SELECT * FROM climbingroute WHERE LocationId=" + strconv.Itoa(areaId)
+	query := "SELECT * FROM climbingroute WHERE LocationId=" + strconv.Itoa(areaId) + " ORDER BY Difficulty"
 
 	res, err := db.Query(query)
 
@@ -88,7 +97,9 @@ func GetRoutesByArea(areaId int) ([]structs.ClimbingRoute, error) {
 	for res.Next() {
 
 		var route structs.ClimbingRoute
-		err := res.Scan(&route.Id, &route.Name, &route.AvgStars, &route.RouteType, &route.Difficulty, &route.Length, &route.LocationId)
+		var diffNum int
+		err := res.Scan(&route.Id, &route.Name, &route.AvgStars, &route.RouteType, &diffNum, &route.Length, &route.LocationId)
+		route.Difficulty = structs.CreateDifficulty(diffNum)
 
 		if err != nil {
 			log.Println(err)
