@@ -7,28 +7,25 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { DifficultyLst } from '../util/Constants';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import { RoutesFilter } from '../classes/RoutesFilter';
 
 interface RouteFilterProps {
-    ElementId: string;
+    FilterAreas: (filter: RoutesFilter) => void;
 }
 
 const RouteFilter: React.FC<RouteFilterProps> = (props: RouteFilterProps) => {
-    const [numStars, setNumStars] = useState<number>(0);
-    const [minDiff, setMinDiff] = useState<string>('');
-    const [maxDiff, setMaxDiff] = useState<string>('');
+    const [filter, setFilter] = useState<RoutesFilter>(new RoutesFilter());
+    
     const [minErrorText, setMinErrorText] = useState<string>('');
     const [maxErrorText, setMaxErrorText] = useState<string>('');
-    const [showTrad, setShowTrad] = useState<boolean>(true);
-    const [showSport, setShowSport] = useState<boolean>(true);
-    const [showTR, setShowTR] = useState<boolean>(true);
 
     useEffect(() => {
         validateDiffValues();
-    }, [minDiff, maxDiff])
+    }, [filter.MinDiff, filter.MaxDiff])
 
     const validateDiffValues = () => {
-        if(minDiff !== '' && maxDiff !== ''){
-            if(DifficultyLst.indexOf(minDiff) > DifficultyLst.indexOf(maxDiff)){
+        if(filter.MinDiff !== '' && filter.MaxDiff !== ''){
+            if(DifficultyLst.indexOf(filter.MinDiff) > DifficultyLst.indexOf(filter.MaxDiff)){
                 setMaxErrorText('Too Small');
                 setMinErrorText('Too Big');
             }
@@ -44,21 +41,13 @@ const RouteFilter: React.FC<RouteFilterProps> = (props: RouteFilterProps) => {
     }
 
     const ResetFilter = () => {
-        setNumStars(0);
-        setMinDiff('');
-        setMaxDiff('');
-        setShowTrad(true);
-        setShowSport(true);
-        setShowTR(true);
+        setFilter(new RoutesFilter());
     }
 
     const FilterAreas = () => {
-        if(numStars > 0 || minDiff !== '' || maxDiff !== ''
+        if(filter.NumStars > 0 || filter.MinDiff !== '' || filter.MaxDiff !== ''
             && (minErrorText === '' && maxErrorText === '')){
-            console.log("There was a valid filter")
-        }
-        else{
-            console.log("There was no filter")
+            
         }
     }
 
@@ -73,20 +62,17 @@ const RouteFilter: React.FC<RouteFilterProps> = (props: RouteFilterProps) => {
     const StarButtons = () => {
         return (
             <div id="StarControlContainer" style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
-                <IconButton id="OneStar" onClick={() => setNumStars(1)}>
-                    {numStars >= 1 ? <StarIcon/> : <StarBorderIcon/>}
+                <IconButton id="OneStar" onClick={() => setFilter({...filter, NumStars: 1})}>
+                    {filter.NumStars >= 1 ? <StarIcon/> : <StarBorderIcon/>}
                 </IconButton>
-                <IconButton id="TwoStars" onClick={() => setNumStars(2)}>
-                    {numStars >= 2 ? <StarIcon/> : <StarBorderIcon/>} 
+                <IconButton id="TwoStars" onClick={() => setFilter({...filter, NumStars: 2})}>
+                    {filter.NumStars >= 2 ? <StarIcon/> : <StarBorderIcon/>} 
                 </IconButton>
-                <IconButton id="ThreeStars" onClick={() => setNumStars(3)}>
-                    {numStars >= 3 ? <StarIcon/> : <StarBorderIcon/>}   
+                <IconButton id="ThreeStars" onClick={() => setFilter({...filter, NumStars: 3})}>
+                    {filter.NumStars >= 3 ? <StarIcon/> : <StarBorderIcon/>}   
                 </IconButton>
-                <IconButton id="FourStars" onClick={() => setNumStars(4)}>
-                    {numStars >= 4 ? <StarIcon/> : <StarBorderIcon/>}
-                </IconButton>
-                <IconButton id="FiveStars" onClick={() => setNumStars(5)}>
-                    {numStars >= 5 ? <StarIcon/> : <StarBorderIcon/>}
+                <IconButton id="FourStars" onClick={() => setFilter({...filter, NumStars: 4})}>
+                    {filter.NumStars >= 4 ? <StarIcon/> : <StarBorderIcon/>}
                 </IconButton>
             </div>
         );
@@ -96,7 +82,8 @@ const RouteFilter: React.FC<RouteFilterProps> = (props: RouteFilterProps) => {
         <div>
             <FormControl variant='filled' sx={{m: 1, minWidth: 120}}>
                 <InputLabel id="minDiffLabel" style={{fontSize: "14px"}}>Min Difficulty</InputLabel>
-                <Select labelId="minDiffLabel" value={minDiff} onChange={(event) => setMinDiff(event.target.value)} error={minErrorText !== ''}>
+                <Select labelId="minDiffLabel" value={filter.MinDiff} onChange={(event) => setFilter({...filter, MinDiff: event.target.value})} 
+                    error={minErrorText !== ''}>
                     <MenuItem value=""/>
                     {DifficultySelects()}
                 </Select>
@@ -105,7 +92,8 @@ const RouteFilter: React.FC<RouteFilterProps> = (props: RouteFilterProps) => {
 
             <FormControl variant="filled" sx={{m: 1, minWidth: 123}}>
                 <InputLabel id="maxDiffLabel" style={{fontSize: "14px"}}>Max Difficulty</InputLabel> 
-                <Select labelId="maxDiffLabel" value={maxDiff} onChange={(event) => setMaxDiff(event.target.value)} error={maxErrorText !== ''} >
+                <Select labelId="maxDiffLabel" value={filter.MaxDiff} onChange={(event) => setFilter({...filter, MaxDiff: event.target.value})} 
+                    error={maxErrorText !== ''} >
                     <MenuItem value=""/>
                     {DifficultySelects()}
                 </Select>
@@ -118,11 +106,11 @@ const RouteFilter: React.FC<RouteFilterProps> = (props: RouteFilterProps) => {
         <div>
             <FormGroup sx={{alignItems: "center"}}>
                 <FormControlLabel control={
-                    <Checkbox checked={showTrad} onChange={(event) => setShowTrad(event.target.checked)} />} label="Trad" />
+                    <Checkbox checked={filter.ShowTrad} onChange={(event) => setFilter({...filter, ShowTrad: event.target.checked})} />} label="Trad" />
                 <FormControlLabel control={
-                    <Checkbox checked={showTR} onChange={(event) => setShowTR(event.target.checked)} />} label="Top Rope" />
+                    <Checkbox checked={filter.ShowTR} onChange={(event) => setFilter({...filter, ShowTR: event.target.checked})} />} label="Top Rope" />
                 <FormControlLabel control={
-                    <Checkbox checked={showSport} onChange={(event) => setShowSport(event.target.checked)} />} label="Sport" />
+                    <Checkbox checked={filter.ShowSport} onChange={(event) => setFilter({...filter, ShowSport: event.target.checked})} />} label="Sport" />
             </FormGroup>
         </div>
     )
@@ -136,7 +124,7 @@ const RouteFilter: React.FC<RouteFilterProps> = (props: RouteFilterProps) => {
 
                 <div id="AverageStars" style={{ padding: "10px 0px"}}>
                     <div id="StarsLabel" style={{fontSize: "16px", fontWeight: 'bolder'}}>
-                        Average Stars 1 - 5
+                        Average Stars 1 - 4
                     </div>
                     {StarButtons()}
                 </div>

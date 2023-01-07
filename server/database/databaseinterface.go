@@ -11,26 +11,30 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// Comment this
-// If the aread id is <= -1, then get all areas, else its a specific area
-func GetClimbingAreas(areaId int) ([]structs.ClimbingArea, error) {
+var connectionString string
 
-	var areas []structs.ClimbingArea
-
+func init() {
 	dat, err := os.ReadFile("util\\database-creds.txt")
 
 	if err != nil {
-		log.Println(err)
-		return nil, err
+		log.Fatal("Could not parse database credentials.", err)
 	}
 
-	db, err := sql.Open("mysql", string(dat[:])+"@tcp(127.0.0.1:3306)/climbingroutes")
+	connectionString = string(dat[:]) + "@tcp(127.0.0.1:3306)/climbingroutes"
+}
+
+// Comment this
+// If the aread id is <= -1, then get all areas, else its a specific area
+func GetClimbingAreas(areaId int) ([]structs.ClimbingArea, error) {
+	db, err := sql.Open("mysql", connectionString)
 	defer db.Close()
 
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
+
+	var areas []structs.ClimbingArea
 
 	query := ""
 	if areaId > -1 {
@@ -65,23 +69,15 @@ func GetClimbingAreas(areaId int) ([]structs.ClimbingArea, error) {
 }
 
 func GetRoutesByArea(areaId int) ([]structs.ClimbingRoute, error) {
-
-	var routes []structs.ClimbingRoute
-
-	dat, err := os.ReadFile("util\\database-creds.txt")
-
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	db, err := sql.Open("mysql", string(dat[:])+"@tcp(127.0.0.1:3306)/climbingroutes")
+	db, err := sql.Open("mysql", connectionString)
 	defer db.Close()
 
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
+
+	var routes []structs.ClimbingRoute
 
 	query := "SELECT * FROM climbingroute WHERE LocationId=" + strconv.Itoa(areaId) + " ORDER BY Difficulty"
 
@@ -110,4 +106,24 @@ func GetRoutesByArea(areaId int) ([]structs.ClimbingRoute, error) {
 	}
 
 	return routes, nil
+}
+
+func GetFilteredClimbingAreas(filter structs.RouteFilter) ([]structs.ClimbingArea, error) {
+	db, err := sql.Open("mysql", connectionString)
+	defer db.Close()
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var areas []structs.ClimbingArea
+
+	rows, err := db.Query("CALL filterAreas(?, ?, ?, ?, ?, ?)", filter.Stars, filter.MinDiff, filter.MaxDiff, filter.ShowTrad, filter.ShowSport, filter.ShowTR)
+
+	for rows.Next() {
+		log.Println("hello", err)
+	}
+
+	return areas, err
 }

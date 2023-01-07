@@ -8,11 +8,11 @@ import markerIconPng from "leaflet/dist/images/marker-icon.png"
 import {Icon, divIcon} from 'leaflet'
 
 interface IMapViewProps {
-    
+    ClimbingAreas?: ClimbingArea[]; 
+    SetClimbingAreas: (areas: ClimbingArea[]) => void;
 }
 
 const MapView: React.FC<IMapViewProps> = (props: IMapViewProps) => {
-    const [climbingAreas, setClimbingAreas] = useState<ClimbingArea[]>();
     const [climbingRoutes, setClimbingRoutes] = useState<ClimbingRoute[]>();
     const [selecteAreaId, setSelecteAreadId] = useState<number>(-1);
 
@@ -32,33 +32,35 @@ const MapView: React.FC<IMapViewProps> = (props: IMapViewProps) => {
       </div>
     )}
 
+    // Runs on render to fetch the default areas
     useEffect(() => {
         fetchAreas();
-      }, []);
+    }, []);
 
+    // Fetch the default areas
     const fetchAreas = () => {
         GetClimbingAreas().then((data) => {
-          setClimbingAreas(data);
+          props.SetClimbingAreas(data);
         }).catch((error) => {
           console.log("Error getting Climbing Areas", error)
         });
       }
     
-      const fetchRoutes = (areaId: number) => {
+    // Fetch the routes for a selected area
+    const fetchRoutes = (areaId: number) => {
         if(areaId === selecteAreaId){
-          setSelecteAreadId(-1)
-          setClimbingRoutes(undefined)
+            setSelecteAreadId(-1)
+            setClimbingRoutes(undefined)
         }
         else{
-          setSelecteAreadId(areaId)
-          GetClimbRoutes(areaId).then((data) => {
-            console.log(data)
-            setClimbingRoutes(data);
-          }).catch((error) => {
-            console.log("Error getting routes for Area", error)
-          });
+            setSelecteAreadId(areaId)
+            GetClimbRoutes(areaId).then((data) => {
+                setClimbingRoutes(data);
+        }).catch((error) => {
+                console.log("Error getting routes for Area", error)
+            });
         }
-      }
+    }
     
       const getRouteMarkers = () => {
         let markers: JSX.Element[] = [];
@@ -88,7 +90,7 @@ const MapView: React.FC<IMapViewProps> = (props: IMapViewProps) => {
     
       const getAreaMarkers = () => {
         let markers: JSX.Element[] = [];
-        climbingAreas?.forEach((area) => {
+        props.ClimbingAreas?.forEach((area) => {
           markers.push(
             <Marker key={area.Name} icon={lIcon} position={[area.Latitude,area.Longitude]} opacity={selecteAreaId != -1 && area.Id != selecteAreaId ? 0.5 : 1.0 } eventHandlers={{
               click: (e) => {
@@ -116,7 +118,7 @@ const MapView: React.FC<IMapViewProps> = (props: IMapViewProps) => {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-            {climbingAreas != null && getAreaMarkers()}
+            {props.ClimbingAreas != null && getAreaMarkers()}
             {climbingRoutes != null && getRouteMarkers()}
           </MapContainer>
         </div>

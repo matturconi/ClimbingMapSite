@@ -3,8 +3,15 @@ import "leaflet/dist/leaflet.css";
 import logoImage from './resources/Logo11.png'
 import RouteFilter from './components/RouteFilter';
 import MapView from './components/MapView';
+import { useState } from 'react';
+import { ClimbingArea } from './classes/ClimbingArea';
 
 function App() {
+  const [climbingAreas, setClimbingAreas] = useState<ClimbingArea[]>();
+
+  const FilterClimbingAreas = () => {
+    
+  }
 
   return (
     <div className="App">
@@ -20,8 +27,8 @@ function App() {
       </div>
 
       <div id="SiteContent" className="row">
-        <RouteFilter ElementId='Something stupid'/>
-        <MapView />
+        <RouteFilter FilterAreas={FilterClimbingAreas}/>
+        <MapView ClimbingAreas={climbingAreas} SetClimbingAreas={setClimbingAreas} />
       </div>
 
       <div className="footer">
