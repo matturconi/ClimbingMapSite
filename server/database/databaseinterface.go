@@ -122,8 +122,53 @@ func GetFilteredClimbingAreas(filter structs.RouteFilter) ([]structs.ClimbingAre
 	rows, err := db.Query("CALL filterAreas(?, ?, ?, ?, ?, ?)", filter.Stars, filter.MinDiff, filter.MaxDiff, filter.ShowTrad, filter.ShowSport, filter.ShowTR)
 
 	for rows.Next() {
-		log.Println("hello", err)
+		var area structs.ClimbingArea
+		err := rows.Scan(&area.Id, &area.Name, &area.Latitude, &area.Longitude, &area.RawAreaPath)
+
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+
+		areas = append(areas, area)
 	}
 
 	return areas, err
+}
+
+func GetFilteredRoutesByArea(areaId int, filter structs.RouteFilter) ([]structs.ClimbingRoute, error) {
+	db, err := sql.Open("mysql", connectionString)
+	defer db.Close()
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var routes []structs.ClimbingRoute
+
+	rows, err := db.Query("CALL filterRoutes(?, ?, ?, ?, ?, ?, ?)", areaId, filter.Stars, filter.MinDiff, filter.MaxDiff, filter.ShowTrad, filter.ShowSport, filter.ShowTR)
+	defer rows.Close()
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	for rows.Next() {
+
+		var route structs.ClimbingRoute
+		var diffNum int
+		err := rows.Scan(&route.Id, &route.Name, &route.AvgStars, &route.RouteType, &diffNum, &route.Length, &route.LocationId)
+		route.Difficulty = structs.CreateDifficulty(diffNum)
+
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+
+		routes = append(routes, route)
+	}
+
+	return routes, nil
 }

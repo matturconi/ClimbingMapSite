@@ -29,6 +29,7 @@ func InitializeRoutes(router *gin.Engine) {
 	api.GET("getClimbingAreas", getClimbingAreas)
 	api.GET("getClimbingRoutes/:id", getClimbingRoutes)
 	api.GET("filterAreas/:stars/:minDiff/:maxDiff/:showTrad/:showSport/:showTR", filterAreas)
+	api.GET("filterRoutes/:locid/:stars/:minDiff/:maxDiff/:showTrad/:showSport/:showTR", filterRoutes)
 }
 
 func getClimbingAreas(c *gin.Context) {
@@ -109,5 +110,49 @@ func filterAreas(c *gin.Context) {
 	} else {
 		var areas []structures.ClimbingArea
 		areas, err = database.GetFilteredClimbingAreas(filter)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"message": "Error fetching filtered areas.",
+			})
+		} else {
+			c.IndentedJSON(http.StatusOK, areas)
+		}
+	}
+}
+
+func filterRoutes(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+	// Get params and check for parsing errors
+	hasErr := false
+	var filter structures.RouteFilter
+	locId, err := strconv.Atoi(c.Param("locid"))
+	hasErr = hasErr || err != nil
+	filter.Stars, err = strconv.Atoi(c.Param("stars"))
+	hasErr = hasErr || err != nil
+	filter.MinDiff, err = strconv.Atoi(c.Param("minDiff"))
+	hasErr = hasErr || err != nil
+	filter.MaxDiff, err = strconv.Atoi(c.Param("maxDiff"))
+	hasErr = hasErr || err != nil
+	filter.ShowTrad, err = strconv.ParseBool(c.Param("showTrad"))
+	hasErr = hasErr || err != nil
+	filter.ShowSport, err = strconv.ParseBool(c.Param("showSport"))
+	hasErr = hasErr || err != nil
+	filter.ShowTR, err = strconv.ParseBool(c.Param("showTR"))
+	hasErr = hasErr || err != nil
+	// If error return error message
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Error parsing filter parameters.",
+		})
+	} else {
+		var routes []structures.ClimbingRoute
+		routes, err = database.GetFilteredRoutesByArea(locId, filter)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"message": "Error fetching filtered Routes.",
+			})
+		} else {
+			c.IndentedJSON(http.StatusOK, routes)
+		}
 	}
 }

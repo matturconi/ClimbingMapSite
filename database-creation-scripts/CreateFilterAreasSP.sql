@@ -16,7 +16,7 @@ BEGIN
         )
         GROUP BY `LocationId`;         
 
-    SELECT * FROM climbingarea
+    SELECT `Id`, `Name`, `Latitude`, `Longitude`, `RawAreaPath` FROM climbingarea
     INNER JOIN loc_tbl lt on lt.LocationId = `Id`;
 
     DROP Table loc_tbl;
