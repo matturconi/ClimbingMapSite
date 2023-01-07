@@ -6,7 +6,7 @@ import mysql.connector
 #######
 
 ## File is deliniated by tabs, sometimes route names have commas in it, and it makes data processing a bit messy
-fileName = "Rumney-Routes-All.txt"
+fileName = "Rumney-Routes-All.td"
 filePath = "raw-data\\"
 ## Open the file for reading each line
 file = open(filePath + fileName, 'r')
@@ -33,6 +33,9 @@ addRoute = (
 )
 
 areaDic = {}
+difficulties = ["3rd", "4th", "5", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10a", "5.10b", "5.10",
+     "5.10c", "5.10d", "5.11a", "5.11b", "5.11", "5.11c", "5.11d", "5.12a", "5.12b", "5.12", "5.12c", "5.12d", "5.13a", "5.13b",
+     "5.13", "5.13c", "5.13d", "5.14a", "5.14b", "5.14", "5.14c", "5.14d", "5.15a", "5.15b", "5.15", "5.15c", "5.15d"]
 
 ## Loop through each line of the file until end of file
 while dat != "":    
@@ -49,6 +52,19 @@ while dat != "":
     areaLat = dat[9]
     areaLong = dat[10]
     
+    ## Process Difficulty to standardize them -> Remove extra info (PG13), take lower rating for things like a/b or c/d and Plus or Minus
+    difficulty = difficulty.split(" ")[0].split("/")[0].strip("+").strip("-")
+    ## Convert it to a number to be used like an enum
+    diffNumber = difficulties.index(difficulty)
+
+    ## Only keep Sport, Trad and TopRope (TR) routes
+    if(',' in routeType):
+        types = ""
+        for route in routeType.split(', '):
+            if route in ["Sport", "Trad", "TR"]:
+                types += (route if types == "" else ", " + route)
+        routeType = types
+
     ## If route length is not null, convert to an int
     if routeLength != '':
         routeLength = int(routeLength)
@@ -68,7 +84,7 @@ while dat != "":
             locId = areaDic[loc]
 
         ## Insert the data into a new entry of the MySQL database
-        routeData = (routeName, avgStars, routeType, difficulty, routeLength, locId)
+        routeData = (routeName, avgStars, routeType, diffNumber, routeLength, locId)
         cursor.execute(addRoute, routeData)
     except: 
         print("Error occured with data line: ", dat)

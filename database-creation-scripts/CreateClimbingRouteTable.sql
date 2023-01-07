@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS ClimbingRoute(
     Name        VARCHAR(256)    NOT NULL,
     AvgStars    DECIMAL(2,1)    NOT NULL,
     RouteType   VARCHAR(32)     NOT NULL,       
-    Difficulty  VARCHAR(16)     NOT NULL,
+    Difficulty  iNT             NOT NULL,
     Length      INT             NULL,
     LocationId  INT             NOT NULL,
     CONSTRAINT FK_ClimbingRoute_LocationId FOREIGN KEY (LocationId) REFERENCES ClimbingArea(Id)

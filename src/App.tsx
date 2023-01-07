@@ -1,67 +1,39 @@
-import React, {useState} from 'react';
-import L from 'leaflet'
-import markerIconPng from "leaflet/dist/images/marker-icon.png"
-import {Icon} from 'leaflet'
 import './App.css';
 import "leaflet/dist/leaflet.css";
-import { MapContainer, Marker, TileLayer, Popup } from 'react-leaflet';
+import logoImage from './resources/Logo11.png'
+import RouteFilter from './components/RouteFilter';
+import MapView from './components/MapView';
+import { useState } from 'react';
+import { ClimbingArea } from './classes/ClimbingArea';
 
 function App() {
-  const [msg, setMsg] = useState<string>("Default Msg");
+  const [climbingAreas, setClimbingAreas] = useState<ClimbingArea[]>();
 
-  const lIcon = (new Icon({iconUrl: markerIconPng}));
-
-  const fetchMsg = () => {
-    fetch('http://localhost:5000/api/fetchedMsg')
-      .then((resp) => resp.json())
-      .then((data) => {
-        console.log(data);
-        setMsg(data.message);
-      })
-      .catch((err) => {
-        console.log(err.message);
-        setMsg("There was an error");
-      });
+  const FilterClimbingAreas = () => {
+    
   }
 
   return (
     <div className="App">
-      <button onClick={fetchMsg}>Click Me First</button>
-      <div>
-        {msg}
+      <div id="SiteTitle" className="row header" >
+        <div id="IconDiv" className="column title" style={{ flex: 1 }}>
+          <div className="iconBorder">
+            <img className="image" src={logoImage} />
+          </div>
+        </div>
+        <div id="SiteTitleDiv" className="column title text" style={{ flex: 10}}>
+          Climbing Route Map Picker
+        </div>
       </div>
 
-      <MapContainer 
-        center={[43.802, -71.837]} 
-        zoom={13} 
-        scrollWheelZoom={true} 
-        style={{ height: '600px', width: "750px" }}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-        <Marker icon={lIcon} position={[43.80527,-71.84431]}>
-          <Popup>
-            The Asylum 1
-          </Popup>
-        </Marker>
-        <Marker icon={lIcon} position={[43.80263,-71.83398]}>
-          <Popup>
-            The G-Spot
-          </Popup>
-        </Marker>        
-        <Marker icon={lIcon} position={[43.80513,-71.84452]}>
-          <Popup>
-            Prudential
-          </Popup>
-        </Marker>
-        <Marker icon={lIcon} position={[43.80386,-71.84091]}>
-          <Popup>
-            Wimea
-          </Popup>
-        </Marker>
+      <div id="SiteContent" className="row">
+        <RouteFilter FilterAreas={FilterClimbingAreas}/>
+        <MapView ClimbingAreas={climbingAreas} SetClimbingAreas={setClimbingAreas} />
+      </div>
 
-      </MapContainer>
+      <div className="footer">
+        Created by Matthew Turconi 2023
+      </div>
     </div>   
   );
 }
