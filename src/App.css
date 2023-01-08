@@ -11,7 +11,11 @@
   --prp-3: #57538a;
   --prp-4: #38373e;
 
-  --header: var(--blu-4);
+  --trad: #80ff66;
+  --sport: #ff2a2a;
+  --tr: #a268ff;
+
+  --header: var(--blu-4); 
   --background: var(--gry-1);
   --footer: var(--header);
 }
@@ -91,13 +95,52 @@
 .routeCircle {
   width: 30px ;
   height: 30px;
+  line-height: 30px;
   border-radius: 50%;
   background: var(--gry-1);
   border-style: solid;
   border-color: var(--gry-3);
   border-width: 2px;
-  opacity: 0;
+  text-align: center;
   box-shadow: 2px 2px 4px var(--blu-4);
+}
+
+.STTr {
+  background: linear-gradient(90deg, var(--trad) 0%, var(--sport) 50%, var(--tr) 100%);
+}
+
+.ST {
+  background: linear-gradient(90deg, var(--trad) 30%, var(--sport) 100%);
+}
+
+.STr {
+  background: linear-gradient(90deg, var(--sport) 30%, var(--tr) 100%);
+}
+
+.TTr{
+  background: linear-gradient(90deg, var(--trad) 30%, var(--tr) 100%);
+}
+
+.S {
+  background: var(--sport);
+}
+
+.T {
+  background: var(--trad)
+}
+
+.Tr {
+  background: var(--tr)
+}
+
+.circleText {
+  font-size: 10px;
+  color: black;
+  font-weight: bold;
+}
+
+.fadeIn {
+  opacity: 0;
   animation: 500ms fadeIn forwards; 
 }
 
