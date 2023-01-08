@@ -4,7 +4,7 @@ export class ClimbingRoute {
     AvgStars: number = 0;
     RouteType: string = '';
     Difficulty: Difficulty = new Difficulty();
-    Length: number = 0;
+    Length: {Int32: number; Valid: boolean} = {Int32: 0, Valid: false};
     LocationId: number = 0;
     Latitude: number = 0;
     Longitude: number = 0;
