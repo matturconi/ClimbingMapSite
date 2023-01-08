@@ -92,6 +92,11 @@
   100% {opacity: 1;}
 }
 
+.fadeIn {
+  opacity: 0;
+  animation: 500ms fadeIn forwards; 
+}
+
 .routeCircle {
   width: 30px ;
   height: 30px;
@@ -137,11 +142,6 @@
   font-size: 10px;
   color: black;
   font-weight: bold;
-}
-
-.fadeIn {
-  opacity: 0;
-  animation: 500ms fadeIn forwards; 
 }
 
 #BackgroundPaper {

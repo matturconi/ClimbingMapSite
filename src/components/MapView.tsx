@@ -105,7 +105,7 @@ const MapView: React.FC<IMapViewProps> = (props: IMapViewProps) => {
                                 {route.Name}
                             </div>
                             <div>
-                                {route.Difficulty.RouteGrade}, {route.RouteType}
+                                {route.Difficulty.RouteGrade}, {route.RouteType}{route.Length.Valid ? ", " + route.Length.Int32 + "ft" : ""}
                             </div>
                             <div>
                                 {route.AvgStars} <StarIcon style={{ width: "12px", height: "12px" }} />'s
@@ -151,6 +151,7 @@ const MapView: React.FC<IMapViewProps> = (props: IMapViewProps) => {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+                {/* Keeping for demo purposes */}
                 {/* {props.ClimbingAreas != null &&
                     <MarkerClusterGroup chunkedLoading spiderLegPolylineOptions={{ opacity: 0 }}>
                         {getAreaMarkers()}

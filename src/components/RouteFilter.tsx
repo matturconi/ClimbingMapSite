@@ -143,7 +143,7 @@ const RouteFilter: React.FC<RouteFilterProps> = (props: RouteFilterProps) => {
                     <Button variant="outlined" startIcon={<ClearIcon />} onClick={ResetFilter} style={{ marginRight: "5px" }}>
                         Clear
                     </Button>
-                    <Button variant="contained" endIcon={<FilterAltIcon />} onClick={FilterAreas}>
+                    <Button variant="contained" endIcon={<FilterAltIcon />} onClick={FilterAreas} disabled={maxErrorText !== '' || minErrorText !== ''}>
                         Filter
                     </Button>
                 </div>
