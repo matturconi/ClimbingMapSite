@@ -27,7 +27,6 @@ func InitializeRoutes(router *gin.Engine) {
 	}
 
 	api.GET("getClimbingAreas", getClimbingAreas)
-	api.GET("getClimbingRoutes/:id", getClimbingRoutes)
 	api.GET("filterAreas/:stars/:minDiff/:maxDiff/:showTrad/:showSport/:showTR", filterAreas)
 	api.GET("filterRoutes/:locid/:stars/:minDiff/:maxDiff/:showTrad/:showSport/:showTR", filterRoutes)
 }
@@ -145,6 +144,14 @@ func filterRoutes(c *gin.Context) {
 			"message": "Error parsing filter parameters.",
 		})
 	} else {
+		// Get the area by id so for its lat long
+		area, err := database.GetClimbingAreas(locId)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"message": "Error finding climbing area.",
+			})
+		}
+
 		var routes []structures.ClimbingRoute
 		routes, err = database.GetFilteredRoutesByArea(locId, filter)
 		if err != nil {
@@ -152,6 +159,19 @@ func filterRoutes(c *gin.Context) {
 				"message": "Error fetching filtered Routes.",
 			})
 		} else {
+			// Need to spiralize the routes to give them a location based on the area origin
+			var origin structures.Point
+			origin.X = float64(area[0].Latitude)
+			origin.Y = float64(area[0].Longitude)
+
+			spiralPoints := spiralizer.CreateSpiralPointsAtOrigin(origin, len(routes)+1)
+			spiralPoints = spiralPoints[1:]
+
+			for i := 0; i < len(spiralPoints); i++ {
+				routes[i].Latitude = spiralPoints[i].X
+				routes[i].Longitude = spiralPoints[i].Y
+			}
+
 			c.IndentedJSON(http.StatusOK, routes)
 		}
 	}
