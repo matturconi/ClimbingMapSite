@@ -37,7 +37,7 @@ function App() {
         <div id="SiteTitle" className="row header" >
           <div id="IconDiv" className="column title" style={{ flex: 1 }}>
             <div className="iconBorder">
-              <img className="image" src={logoImage} alt={"Site Icon"} />
+              <img className="image" title="Created using OpenAI Dall-E-2" src={logoImage} alt={"Site Icon"} />
             </div>
           </div>
           <div id="SiteTitleDiv" className="column title text" style={{ flex: 10 }}>
